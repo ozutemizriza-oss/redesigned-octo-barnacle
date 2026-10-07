@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matematik Testi - Perşembe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans text-gray-800">
+
+    <div class="max-w-3xl mx-auto py-10 px-5">
+        <!-- Başlık Alanı -->
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8 text-center">
+            <h1 class="text-2xl font-bold text-indigo-600 mb-2">Perşembe Görevi: Matematik Kampı</h1>
+            <p class="text-gray-500">Mutlak Değer, Kesirler, Ondalık Gösterim ve Sayı Doğrusu</p>
+        </div>
+
+        <!-- Öğrenci Bilgisi -->
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Öğrencinin Adı Soyadı:</label>
+            <input type="text" id="studentName" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 outline-none" placeholder="Adını buraya yaz...">
+        </div>
+
+        <!-- Sorular Konteyneri -->
+        <div id="quiz-container" class="space-y-6">
+            <!-- Sorular JS ile buraya yüklenecek -->
+        </div>
+
+        <!-- Buton -->
+        <div class="mt-8 text-center">
+            <button onclick="finishQuiz()" id="submitBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-200 w-full sm:w-auto">
+                Testi Bitir ve Sonuçları Gönder
+            </button>
+        </div>
+    </div>
+
+    <!-- Sonuç Modalı -->
+    <div id="resultModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 px-4">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl max-w-md w-full text-center transform scale-95 transition-all">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Harika İş Çıkardın!</h2>
+            <p id="resultText" class="text-gray-600 mb-6">Sonuçların hesaplanıyor...</p>
+            <p class="text-sm text-indigo-600 font-medium mb-6">Sonuçların Rıza Hoca'ya e-posta olarak iletildi.</p>
+            <button onclick="closeModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2 px-6 rounded-lg w-full transition">
+                Sayfayı Kapat
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Soru Veritabanı
+        const questionsData = [
+            {
+                id: 1,
+                question: "|-8| ile |+3| sayılarının toplamı kaçtır?",
+                options: ["-5", "5", "11", "-11"],
+                correct: 2, // 11 (C şıkkı, index 2)
+                topic: "Mutlak Değer"
+            },
+            {
+                id: 2,
+                question: "2/5 kesrinin genişletilmiş hali aşağıdakilerden hangisi olabilir?",
+                options: ["4/15", "6/15", "4/10", "8/25"],
+                correct: 2, // 4/10
+                topic: "Kesirler"
+            },
+            {
+                id: 3,
+                question: "3,25 ondalık gösteriminin kesir olarak en sade hali aşağıdakilerden hangisidir?",
+                options: ["13/4", "13/5", "6/4", "9/4"],
+                correct: 0, // 13/4
+                topic: "Ondalık Gösterim"
+            },
+            {
+                id: 4,
+                question: "Sayı doğrusunda -4 ile +2 arasında kaç tane tam sayı vardır?",
+                options: ["4", "5", "6", "7"],
+                correct: 3, // 13/4
+                topic: "Sayı Doğrusu"
+
+
+            },
+            
+            {
+                id: 5, 
+                question:"Aşağıdakilerden hangisi negatif bir rasyonel sayıdır?",
+                options: ["0/5", "3/-4", "-(-1/2)", "|-3/4|"],
+                correct: 1,
+                topic:"Rasyonel Sayılar"
+            },
+            {
+                 id: 6, 
+                question:"Mutlak değeri 5 olan tam sayıların çarpımı kaçtır?",
+                options: ["0", "10", "20", "-25"],
+                correct: 3,
+                topic:"Mutlak Değer"
+
+            },
+            {
+                 id: 7, 
+                question:"1/2 + 3/8 işleminin sonucu kaçtır?",
+                options: ["4/10", "7/8", "10/17", "6/8"],
+                correct: 1,
+                topic:"Kesirler"
+
+            },
+            {
+                 id: 8, 
+                question:"12,456 sayısında 5 rakamının basamak değeri nedir?",
+                options: ["0,5", "0,05", "0,005", "50"],
+                correct: 1,
+                topic:"Ondalık Sayılar"
+
+            },
+            {
+                 id: 9, 
+                question:"0 ile 1 arası 4 eş parçaya bölünmüştür. Sıfırdan başlayarak sağa doğru 3. çizgi hangi kesri ifade eder?",
+                options: ["1/4", "2/4", "3/4", "4/4"],
+                correct: 2,
+                topic:"Sayı Doğrusu"
+
+            },
+            {
+                 id: 10, 
+                question:"-1/2, -3/4 ve -1/4 rasyonel sayılarının küçükten büyüğe doğru sıralanışı hangisidir?",
+                options: ["-3/4 < -1/2 < -1/4",  "-1/4 < -1/2 < -3/4", "-1/2 < -3/4 < -1/4", "-3/4 < -1/4 < -1/2"],
+                correct: 0,
+                topic:"Rasyonel Sayılar"
+
+            },
+            {
+                 id: 11, 
+                question:"|-12| > A eşitsizliğini sağlayan en büyük A tam sayısı kaçtır?",
+                options: ["11", "12", "13", "-11"],
+                correct: 0,
+                topic:"Mutlak Değer"
+
+            }, 
+            {
+                 id: 12, 
+                question:"Bir pizzanın 1/3'ünü Ali, 1/6'sını Ayşe yemiştir. Geriye pizzanın kaçta kaçı kalmıştır?",
+                options: ["1/2", "1/3", "1/4", "4/6"],
+                correct: 0,
+                topic:"Kesirler"
+
+            },
+            {
+                 id: 13, 
+                question:"2,4 ile 1,5 sayılarının çarpımı kaçtır?",
+                options: ["3,6", "3,9", "4,2", "2,9"],
+                correct: 0,
+                topic:"Ondalık Sayılar"
+
+            },
+            {
+                 id: 14, 
+                question:"-2 tam 1/2 sayısı sayı doğrusunda hangi iki ardışık tam sayı arasındadır?",
+                options: ["-1 ile -2", "-2 ile -3", "1 ile 2", "2 ile 3"],
+                correct: 1,
+                topic:"Sayı Doğrusu"
+            },
+            {
+                 id: 15, 
+                question:"Hava sıcaklığı -3 derecedir. Sıcaklık 7 derece artarsa oluşan yeni sıcaklığın mutlak değeri kaç olur?",
+                options: ["-4", "4", "-10", "10"],
+                correct: 1,
+                topic:"Karışık Problem"
+            } 
+
+            // Diğer 12 soruyu aynı formatta buraya ekleyebilirsin
+        ];
+
+        let userAnswers = {};
+
+        function renderQuestions() {
+            const container = document.getElementById("quiz-container");
+            container.innerHTML = "";
+
+            questionsData.forEach((q, index) => {
+                const questionHTML = `
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="bg-indigo-100 text-indigo-800 text-xs font-bold px-2.5 py-0.5 rounded">${q.topic}</span>
+                            <span class="text-gray-400 text-sm font-medium">Soru ${index + 1}</span>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">${q.question}</h3>
+                        <div class="space-y-3">
+                            ${q.options.map((opt, optIndex) => `
+                                <label class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-indigo-50 transition peer-checked:bg-indigo-50 peer-checked:border-indigo-500">
+                                    <input type="radio" name="q${q.id}" value="${optIndex}" onchange="selectAnswer(${q.id}, ${optIndex})" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                                    <span class="ml-3 text-gray-700">${opt}</span>
+                                </label>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += questionHTML;
+            });
+        }
+
+        function selectAnswer(questionId, optionIndex) {
+            userAnswers[questionId] = optionIndex;
+        }
+
+        function finishQuiz() {
+            const studentName = document.getElementById("studentName").value;
+            if (!studentName) {
+                alert("Lütfen önce adını soyadını yaz!");
+                return;
+            }
+
+            const btn = document.getElementById("submitBtn");
+            btn.innerHTML = "Sonuçlar Gönderiliyor...";
+            btn.disabled = true;
+
+            let score = 0;
+            let wrongQuestions = [];
+
+            questionsData.forEach(q => {
+                if (userAnswers[q.id] === q.correct) {
+                    score++;
+                } else {
+                    const userAnswerText = userAnswers[q.id] !== undefined ? q.options[userAnswers[q.id]] : "Boş";
+                    wrongQuestions.push(`Soru ${q.id} (${q.topic}): Cevabın '${userAnswerText}', Doğrusu '${q.options[q.correct]}'`);
+                }
+            });
+
+            // E-posta Gönderimi için Formspree Kullanımı
+            // DİKKAT: "YOUR_FORMSPREE_ENDPOINT" yazan yeri kendi linkinle değiştirmelisin.
+            const formspreeEndpoint = "https://formspree.io/f/mgaoakgk";
+
+            const emailData = {
+                Ogrenci_Adi: studentName,
+                Dogru_Sayisi: score,
+                Yanlis_Bos_Sayisi: questionsData.length - score,
+                Toplam_Soru: questionsData.length,
+                Hata_Detaylari: wrongQuestions.length > 0 ? wrongQuestions.join(" | ") : "Hepsi Doğru!"
+            };
+
+            fetch(formspreeEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(emailData)
+            })
+            .then(response => {
+                showModal(score, questionsData.length);
+            })
+            .catch(error => {
+                alert("Bir hata oluştu, lütfen Rıza Hoca'ya haber ver.");
+                btn.innerHTML = "Tekrar Dene";
+                btn.disabled = false;
+            });
+        }
+
+        function showModal(score, total) {
+            document.getElementById("resultText").innerHTML = `${total} soruda <strong>${score} doğru</strong> yaptın.`;
+            const modal = document.getElementById("resultModal");
+            modal.classList.remove("hidden");
+        }
+
+        function closeModal() {
+            window.location.reload();
+        }
+
+        // Sayfa yüklendiğinde soruları bas
+        window.onload = renderQuestions;
+    
+    </script>
+</body>
+</html>
